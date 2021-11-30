@@ -9,6 +9,7 @@ import tensorflow as tf
 from tensorflow.math import sigmoid
 from tqdm import tqdm
 from vae import VAE, CVAE, reparametrize, loss_function
+import time
 
 
 def parseArguments():
@@ -57,7 +58,27 @@ def train_vae(model, train_loader, args, is_cvae=False):
     Returns:
     - total_loss: Sum of loss values of all batches.
     """
-    pass
+    start_time = time.time()
+
+    total_loss = 0
+    batch_num = 0
+    optimizer = tf.keras.optimizers.Adam(learning_rate=args.learning_rate)
+    for batch in train_loader:
+        images, labels = batch
+        with tf.GradientTape() as tape:
+            if is_cvae:
+                x_hat, mu, logvar = model.call(images, one_hot(labels, 10))
+            else:
+                x_hat, mu, logvar = model.call(images)
+            loss = loss_function(x_hat, images, mu, logvar)
+            total_loss += loss
+            batch_num+=1
+            print(time.time()-start_time, batch_num, loss)
+
+        gradients = tape.gradient(loss, model.trainable_variables)
+        optimizer.apply_gradients(zip(gradients, model.trainable_variables))
+
+    return total_loss
 
 def load_mnist(batch_size, buffer_size=1024):
     """

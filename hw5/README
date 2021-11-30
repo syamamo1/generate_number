@@ -1,2 +1,18 @@
 README
 
+ARCHITECTURE ------------
+Hidden Dim = 600
+
+Encoder = 3 layer Relu
+Decoder = 4 layer Relu,R,R,Sigmoid
+
+RESULTS ------------------
+VAE 
+	epoch train time = 20.5 sec
+	loss = 107 
+
+CVAE 
+	epoch train time = 23.7 sec
+	loss = 101
+
+Accuracy = 97% 
